@@ -11,7 +11,7 @@ REDUCE
 
 DETAILED
 <code> 
-    wwhile ps -p <PID>  > /dev/null; do
+    while ps -p <PID>  > /dev/null; do
         ps -o pid,min_flt,maj_flt,rss,vsz -p <PID>
         sleep 1
     done
