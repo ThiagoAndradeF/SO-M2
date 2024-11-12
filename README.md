@@ -1,6 +1,6 @@
 # SO-M2
-Command for observe page faults in linux: 
-REDUCE
+Command for observe page faults PID to process in linux: \n 
+REDUCED
 <code> 
     while ps -p -PIDNUMBER-  > /dev/null; do
         ps -o pid,min_flt,maj_flt -p -PIDNUMBER- 
