@@ -25,10 +25,14 @@ struct fat16_newcluster_info
 	uint32_t address;
 };
 
+struct fat32_newcluster_info
+ {
+    uint32_t cluster; // Número do cluster alocado
+    uint32_t address; // Endereço físico onde o cluster está armazenado
+};
 
 /* list files in fat_bpb */
 struct fat_dir *ls(FILE *, struct fat_bpb *);
-
 
 /* move um arquivo da fonte ao destino */
 void mv(FILE* fp, char* source, char* dest, struct fat_bpb* bpb);
@@ -49,6 +53,8 @@ struct far_dir_searchres find_in_root(struct fat_dir *dirs, char *filename, stru
 
 /* Procura cluster vazio */
 struct fat16_newcluster_info fat16_find_free_cluster(FILE* fp, struct fat_bpb* bpb);
+
+struct fat32_newcluster_info fat32_find_free_cluster(FILE* fp, struct fat_bpb* bpb);
 
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 

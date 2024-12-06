@@ -82,10 +82,7 @@ uint32_t bpb_data_sector_count(struct fat_bpb *);
 uint32_t bpb_data_cluster_count(struct fat_bpb *bpb);
 // Função que encontra um cluster livre e retorna informações sobre ele
 
-struct fat32_newcluster_info {
-    uint32_t cluster; // Número do cluster alocado
-    uint32_t address; // Endereço físico onde o cluster está armazenado
-};
+
 // Função para calcular o endereço físico de um cluster (FAT32)
 uint32_t cluster_to_address(uint32_t cluster, struct fat_bpb *bpb)
 {

@@ -6,11 +6,11 @@
 #include <ctype.h>
 
 #include <stdbool.h>
-#include "fat16.h"
+#include "fat32.h"
 
 
 /* Manipulate the path to lead com name, extensions and special characters */
-bool cstr_to_fat16wnull(char *filename, char output[FAT16STR_SIZE_WNULL])
+bool cstr_to_fat32wnull(char *filename, char output[FAT32STR_SIZE_WNULL])
 {
 
 

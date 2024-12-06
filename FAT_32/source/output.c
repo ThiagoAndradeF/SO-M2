@@ -42,18 +42,18 @@ void show_files(struct fat_dir *dirs)
     while ((cur = dirs++) != NULL)
 	{
 
-		if (cur->name[0] == 0)
-			break;
+		if (cur->name[0] == 0) // Última entrada
+            break;
 
         else if ((cur->name[0] == DIR_FREE_ENTRY) || (cur->attr == DIR_FREE_ENTRY))
             continue;
 
-		else if (cur->attr == 0xf)
-			continue;
+		if (cur->attr == 0x0F) // Entrada de LFN
+            continue;
 
 		struct pretty_int num = pretty_print(cur->file_size);
 
-        fprintf(stdout, "0x%-.*x  %.*s  %4i %s\n", 2, cur->attr, FAT16STR_SIZE, cur->name, num.num, num.suff);
+        fprintf(stdout, "0x%-.*x  %.*s  %4i %s\n", 2, cur->attr, FAT32STR_SIZE, cur->name, num.num, num.suff);
     }
 
     return;
@@ -75,7 +75,8 @@ void verbose(struct fat_bpb *bios_pb)
     fprintf(stdout, "Sector per cluster: %d\n", bios_pb->sector_p_clust);
     fprintf(stdout, "Reserved sector: %d\n", bios_pb->reserved_sect);
     fprintf(stdout, "Number of FAT copies: %d\n", bios_pb->n_fat);
-    fprintf(stdout, "Number of possible entries: %d\n", bios_pb->possible_rentries);
+    // fprintf(stdout, "Number of possible entries: %d\n", bios_pb->possible_rentries);//Como o FAT32 não define um número fixo de entradas no diretório raiz,não é calculado estaticamente;
+
     fprintf(stdout, "Small number of sectors: %d\n", bios_pb->snumber_sect);
     fprintf(stdout, "Media descriptor: %hhX\n", bios_pb->media_desc);
     fprintf(stdout, "Sector per fat: %d\n", bios_pb->sect_per_fat);

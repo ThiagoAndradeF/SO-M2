@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "types.h": "c"
+        "types.h": "c",
+        "fat32.h": "c",
+        "stdlib.h": "c"
     }
 }
