@@ -1,0 +1,4 @@
+*.kdev4*
+build/*
+obese32
+disk.img

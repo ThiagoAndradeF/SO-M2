@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 
+
+
 class Program
 {
     private const int IterationCount = 100;

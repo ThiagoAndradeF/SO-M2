@@ -1,20 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "OyPKz19nf1Ax2jxkwz2DSsi2BPFtNm8G3qcVbzD67R4AP84dU9oc0iew/l8BVqaRhP2qVCMaST4YQV8Z9HuHMw==",
+  "dgSpecHash": "wt4CTsSiXtX+yakApxdxLDO1t5yrCTolS8zMOZvfbfHZvNkmNlupqWQOmZ4EECgGnP7I61200XCshWhJdd/qkQ==",
   "success": true,
-  "projectFilePath": "/home/thiago/Desktop/Colege/College/OS/threadProcessing/Server/Server.csproj",
+  "projectFilePath": "/home/thiago/Desktop/Colege/SO-M2/BuffersCreate/AlocacaoCSharp/Server.csproj",
   "expectedPackageFiles": [
     "/home/thiago/.nuget/packages/system.configuration.configurationmanager/8.0.1/system.configuration.configurationmanager.8.0.1.nupkg.sha512",
     "/home/thiago/.nuget/packages/system.diagnostics.eventlog/8.0.1/system.diagnostics.eventlog.8.0.1.nupkg.sha512",
     "/home/thiago/.nuget/packages/system.diagnostics.performancecounter/8.0.1/system.diagnostics.performancecounter.8.0.1.nupkg.sha512",
     "/home/thiago/.nuget/packages/system.security.cryptography.protecteddata/8.0.0/system.security.cryptography.protecteddata.8.0.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Problem reading the cache file /home/thiago/Desktop/Colege/College/OS/threadProcessing/Server/obj/project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
-    }
-  ]
+  "logs": []
 }

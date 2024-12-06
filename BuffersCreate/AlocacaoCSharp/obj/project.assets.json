@@ -245,11 +245,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/thiago/Desktop/Colege/College/OS/threadProcessing/Server/Server.csproj",
+      "projectUniqueName": "/home/thiago/Desktop/Colege/SO-M2/BuffersCreate/AlocacaoCSharp/Server.csproj",
       "projectName": "Server",
-      "projectPath": "/home/thiago/Desktop/Colege/College/OS/threadProcessing/Server/Server.csproj",
+      "projectPath": "/home/thiago/Desktop/Colege/SO-M2/BuffersCreate/AlocacaoCSharp/Server.csproj",
       "packagesPath": "/home/thiago/.nuget/packages/",
-      "outputPath": "/home/thiago/Desktop/Colege/College/OS/threadProcessing/Server/obj/",
+      "outputPath": "/home/thiago/Desktop/Colege/SO-M2/BuffersCreate/AlocacaoCSharp/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/thiago/.nuget/NuGet/NuGet.Config"
@@ -300,13 +300,5 @@
         "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.110/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Problem reading the cache file /home/thiago/Desktop/Colege/College/OS/threadProcessing/Server/obj/project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
-    }
-  ]
+  }
 }

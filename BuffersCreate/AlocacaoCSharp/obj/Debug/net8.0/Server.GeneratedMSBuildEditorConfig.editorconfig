@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Server
-build_property.ProjectDir = /home/thiago/Desktop/Colege/College/OS/threadProcessing/Server/
+build_property.ProjectDir = /home/thiago/Desktop/Colege/SO-M2/BuffersCreate/AlocacaoCSharp/
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
