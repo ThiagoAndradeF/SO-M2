@@ -156,6 +156,12 @@ void mv(FILE *fp, char *source, char *dest, struct fat_bpb *bpb)
     return;
 }
 
+
+// Busca da entrada do diretório: Encontre o arquivo a ser removido.
+// Liberação da entrada de diretório: A marcação da entrada como "livre" (usando o valor DIR_FREE_ENTRY).
+// Liberação dos clusters: Libere os clusters que estavam alocados para o arquivo, zerando as entradas correspondentes na tabela FAT.
+// Exclusão do arquivo: A entrada do diretório e a tabela FAT devem ser modificadas para indicar que o arquivo foi removido.
+
 void rm(FILE* fp, char* filename, struct fat_bpb* bpb)
 {
     /* Manipulação de diretório */

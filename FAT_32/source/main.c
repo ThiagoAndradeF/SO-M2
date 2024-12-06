@@ -3,7 +3,7 @@
 #include <string.h>
 #include <locale.h>
 
-#include "fat16.h"
+#include "fat32.h"
 #include "commands.h"
 #include "output.h"
 
@@ -12,12 +12,12 @@ void usage(char *executable)
 {
 	fprintf(stdout, "Usage:\n");
 	fprintf(stdout, "\t%s -h | --help for help\n", executable);
-	fprintf(stdout, "\t%s ls <fat16-img> - List files from the FAT16 image\n", executable);
-	fprintf(stdout, "\t%s cp <path> <dest> <fat16-img> - Copy files from the image path to local dest.\n", executable);
-	fprintf(stdout, "\t%s mv <path> <dest> <fat16-img> - Move files from the path to the FAT16 path\n", executable);
-	fprintf(stdout, "\t%s rm <path> <file> <fat16-img> - Remove files from the path to the FAT16 path\n", executable);
+	fprintf(stdout, "\t%s ls <fat32-img> - List files from the FAT32 image\n", executable);
+	fprintf(stdout, "\t%s cp <path> <dest> <fat32-img> - Copy files from the image path to local dest.\n", executable);
+	fprintf(stdout, "\t%s mv <path> <dest> <fat32-img> - Move files from the path to the FAT32 path\n", executable);
+	fprintf(stdout, "\t%s rm <path> <file> <fat32-img> - Remove files from the path to the FAT32 path\n", executable);
 	fprintf(stdout, "\n");
-	fprintf(stdout, "\tfat16-img needs to be a valid Fat16.\n\n");
+	fprintf(stdout, "\tfat32-img needs to be a valid Fat32.\n\n");
 }
 
 int main(int argc, char **argv)

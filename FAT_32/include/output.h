@@ -1,7 +1,7 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
 
-#include "fat16.h"
+#include "fat32.h"
 
 void show_files(struct fat_dir *);
 
