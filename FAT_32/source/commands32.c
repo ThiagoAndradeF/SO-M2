@@ -4,16 +4,12 @@
 #include <sys/stat.h>
 #include <stdbool.h>
 #include "commands.h"
-
-// #include "fat16.h"
 #include "fat32.h"
 #include "support.h"
-
 #include <errno.h>
 #include <err.h>
 #include <error.h>
 #include <assert.h>
-
 #include <sys/types.h>
 
 /*
@@ -90,6 +86,7 @@ struct fat_dir *ls(FILE *fp, struct fat_bpb *bpb)
 
     return dirs;
 } 
+
 
 //REFATORAÇÃO MV
 // Conversão de nome para FAT32: A função cstr_to_fat32wnull() é usada para converter 
@@ -260,8 +257,8 @@ void cp(FILE *fp, char* source, char* dest, struct fat_bpb *bpb)
     /* Manipulação de diretório */
     char source_rname[FAT32STR_SIZE_WNULL], dest_rname[FAT32STR_SIZE_WNULL];
 
-    bool badname = cstr_to_fat16wnull(source, source_rname)
-                || cstr_to_fat16wnull(dest, dest_rname);
+    bool badname = cstr_to_fat32wnull(source, source_rname)
+                || cstr_to_fat32wnull(dest, dest_rname);
 
     if (badname)
     {
@@ -380,10 +377,10 @@ void cp(FILE *fp, char* source, char* dest, struct fat_bpb *bpb)
 // Adicionamos o uso da função fat32_find_free_cluster() para localizar clusters livres.
 // Garantimos que os cálculos de alocação de clusters e cópia de dados estejam corretos para o FAT32.
 
-void cat_fat32(FILE* fp, char* filename, struct fat_bpb* bpb)
+void cat(FILE* fp, char* filename, struct fat_bpb* bpb)
 {
     char rname[FAT32STR_SIZE_WNULL];
-    bool badname = cstr_to_fat16wnull(filename, rname); // Converte para o formato de nome compatível
+    bool badname = cstr_to_fat32wnull(filename, rname); // Converte para o formato de nome compatível
     if (badname)
     {
         fprintf(stderr, "Nome de arquivo inválido.\n");

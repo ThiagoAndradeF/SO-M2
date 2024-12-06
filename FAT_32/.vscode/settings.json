@@ -2,6 +2,7 @@
     "files.associations": {
         "types.h": "c",
         "fat32.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "output.h": "c"
     }
 }

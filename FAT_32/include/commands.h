@@ -2,7 +2,7 @@
 #define COMMANDS_H
 
 #include <stdbool.h>
-#include "fat16.h"
+#include "fat32.h"
 
 /*
  * Esta struct encapsula o resultado de find(), carregando informações sobre a

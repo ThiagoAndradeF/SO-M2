@@ -80,22 +80,16 @@ uint32_t bpb_root_dir_address(struct fat_bpb *);
 uint32_t bpb_data_address(struct fat_bpb *);
 uint32_t bpb_data_sector_count(struct fat_bpb *);
 uint32_t bpb_data_cluster_count(struct fat_bpb *bpb);
+uint32_t bpb_froot_addr(struct fat_bpb *bpb);  // Apenas a declaração, sem definição.
+uint32_t bpb_faddress(struct fat_bpb *);
 // Função que encontra um cluster livre e retorna informações sobre ele
-
-
+uint32_t bpb_fdata_cluster_count(struct fat_bpb *bpb);
+uint32_t bpb_fdata_addr(struct fat_bpb *bpb);
+uint32_t bpb_fdata_sector_count(struct fat_bpb *);
 // Função para calcular o endereço físico de um cluster (FAT32)
-uint32_t cluster_to_address(uint32_t cluster, struct fat_bpb *bpb)
-{
-    // Calcular o offset do FAT para o cluster especificado (FAT32 usa 4 bytes por entrada)
-    uint32_t fat_offset = cluster * 4;
-    uint32_t fat_address = bpb_fat_address(bpb) + fat_offset;  // Local do FAT no disco
-
-    // Calcular o endereço de dados para o cluster (em relação ao número de setores e clusters)
-    uint32_t data_offset = (cluster - 2) * bpb->sector_p_clust * bpb->bytes_p_sect;
-    uint32_t data_address = bpb_data_address(bpb) + data_offset;
-
-    return data_address;  // Retorna o endereço físico do cluster
-}
+uint32_t bpb_fdata_sector_count(struct fat_bpb *bpb);
+uint32_t cluster_to_address(uint32_t cluster, struct fat_bpb *bpb);
+uint32_t bpb_fdata_sector_count_s(struct fat_bpb *bpb);
 
 ///
 
