@@ -17,21 +17,12 @@ uint32_t bpb_faddress(struct fat_bpb *bpb)
 	return bpb->reserved_sect * bpb->bytes_p_sect;
 }
 /* calcular endereço do diretório raiz */
-uint32_t cluster_to_address(uint32_t cluster, struct fat_bpb *bpb)
-{
-    // Calcular o offset do FAT para o cluster especificado (FAT32 usa 4 bytes por entrada)
-    uint32_t fat_offset = cluster * 4;
-    uint32_t fat_address = bpb_fat_address(bpb) + fat_offset;  // Local do FAT no disco
-
-    // Calcular o endereço de dados para o cluster (em relação ao número de setores e clusters)
-    uint32_t data_offset = (cluster - 2) * bpb->sector_p_clust * bpb->bytes_p_sect;
-    uint32_t data_address = bpb_data_address(bpb) + data_offset;
-
-    return data_address;  // Retorna o endereço físico do cluster
+uint32_t cluster_to_address(uint32_t cluster, struct fat_bpb *bpb) {
+    uint32_t first_data_sector = bpb->reserved_sect + (bpb->n_fat * bpb->sect_per_fat);
+    uint32_t cluster_offset = (cluster - 2) * bpb->sector_p_clust;
+    return (first_data_sector + cluster_offset) * bpb->bytes_p_sect;
 }
-
 uint32_t bpb_root_dir_address(struct fat_bpb *bpb) {
-    // Calcular o endereço de dados para o cluster da raiz
     return bpb_data_address(bpb) + (bpb->root_cluster - 2) * bpb->sector_p_clust * bpb->bytes_p_sect;
 }
 uint32_t bpb_fdata_addr(struct fat_bpb *bpb) {
@@ -68,6 +59,7 @@ uint32_t bpb_data_cluster_count(struct fat_bpb *bpb) {
     return sectors / bpb->sector_p_clust;
 }
 
+
 // /* calcular endereço físico de um cluster (FAT32) */
 // uint32_t cluster_to_address(uint32_t cluster, struct fat_bpb *bpb) {
 //     uint32_t data_offset = (cluster - 2) * bpb->sector_p_clust * bpb->bytes_p_sect;
@@ -79,18 +71,22 @@ uint32_t bpb_data_cluster_count(struct fat_bpb *bpb) {
  * lê dados de um offset específico no arquivo
  * retorna RB_ERROR em caso de erro ou RB_OK em caso de sucesso
  */
-int read_bytes(FILE *fp, unsigned int offset, void *buff, unsigned int len) {
-    if (fseek(fp, offset, SEEK_SET) != 0) {
-        error_at_line(0, errno, __FILE__, __LINE__, "Erro ao buscar offset %u", offset);
-        return RB_ERROR;
-    }
-    if (fread(buff, 1, len, fp) != len) {
-        error_at_line(0, errno, __FILE__, __LINE__, "Erro ao ler dados do arquivo");
-        return RB_ERROR;
-    }
-    return RB_OK;
-}
+int read_bytes(FILE *fp, unsigned int offset, void *buff, unsigned int len)
+{
 
+	if (fseek(fp, offset, SEEK_SET) != 0)
+	{
+		error_at_line(0, errno, __FILE__, __LINE__, "warning: error when seeking to %u", offset);
+		return RB_ERROR;
+	}
+	if (fread(buff, 1, len, fp) != len)
+	{
+		error_at_line(0, errno, __FILE__, __LINE__, "warning: error reading file");
+		return RB_ERROR;
+	}
+
+	return RB_OK;
+}
 /* lê o BPB do FAT32 */
 void rfat(FILE *fp, struct fat_bpb *bpb) {
     read_bytes(fp, 0x0, bpb, sizeof(struct fat_bpb));

@@ -11,28 +11,23 @@
 #include <error.h>
 #include <assert.h>
 #include <sys/types.h>
-
 /*
 Para refatorar a função find_in_root para o padrão FAT32, precisamos
 garantir que ela funcione de maneira similar, 
 mas levando em consideração as diferenças entre FAT16 e FAT32,
 como o tamanho do nome do arquivo (agora usando FAT32STR_SIZE),
-e o formato de nome do arquivo.
- */
-struct far_dir_searchres find_in_root(struct fat_dir *dirs, char *filename, struct fat_bpb *bpb)
-{
+e o formato de nome do arquivo.*/
+struct far_dir_searchres find_in_root(struct fat_dir *dirs, char *filename, struct fat_bpb *bpb) {
     struct far_dir_searchres res = { .found = false };
 
     // Itera sobre as entradas de diretório
-    for (size_t i = 0; i < bpb->n_fat; i++)
-    {
+    for (size_t i = 0; i < bpb->n_fat; i++) {
         // Ignora entradas livres ou inválidas
         if (dirs[i].name[0] == DIR_FREE_ENTRY || dirs[i].name[0] == '\0')
             continue;
 
         // Compara o nome do arquivo armazenado com o nome fornecido
-        if (memcmp((char *) dirs[i].name, filename, FAT32STR_SIZE) == 0)
-        {
+        if (memcmp((char *) dirs[i].name, filename, FAT32STR_SIZE) == 0) {
             res.found = true;
             res.fdir  = dirs[i];
             res.idx   = i;
@@ -43,25 +38,9 @@ struct far_dir_searchres find_in_root(struct fat_dir *dirs, char *filename, stru
     return res;
 }
 
-/*
-Número de entradas: A função agora usa bpb->n_fat (que é o número de entradas
-no diretório raiz no FAT32), ao invés de bpb->possible_rentries, para iterar sobre as entradas do diretório.
-Verificação de entradas livres: As entradas livres são identificadas por DIR_FREE_ENTRY ou por um byte 
-nulo ('\0'), indicando que a entrada está disponível.
-Comparação dos nomes dos arquivos: A comparação do nome 
-do arquivo agora usa FAT32STR_SIZE para garantir que estamos comparando corretamente o tamanho do nome no formato FAT32.
-Resultado da pesquisa: Se o nome do arquivo (filename) for encontrado na entrada do diretório
-(dirs[i].name), a função define res.found como true, preenche a estrutura res.fdir com a entrada
-correspondente e registra o índice da entrada no diretório com res.idx.
-Retorno da função: A função retorna a estrutura far_dir_searchres, que contém o resultado da busca. Caso o arquivo não seja 
-encontrado, res.found será false, e as demais informações não serão alteradas.
- */
-struct fat_dir *ls(FILE *fp, struct fat_bpb *bpb)
-{
+struct fat_dir *ls(FILE *fp, struct fat_bpb *bpb) {
     // Calcula o endereço do diretório raiz no FAT32.
     uint32_t root_address = bpb_root_dir_address(bpb);
-
-    // Calcula o tamanho do diretório raiz com base no número de entradas de diretório.
     uint32_t root_size = sizeof(struct fat_dir) * bpb->n_fat;
 
     // Aloca memória para armazenar as entradas do diretório.
@@ -72,6 +51,7 @@ struct fat_dir *ls(FILE *fp, struct fat_bpb *bpb)
 
     // Lê as entradas do diretório raiz do disco.
     if (read_bytes(fp, root_address, dirs, root_size) == RB_ERROR) {
+        free(dirs);
         error_at_line(EXIT_FAILURE, EIO, __FILE__, __LINE__, "Erro ao ler diretório raiz");
     }
 
@@ -84,61 +64,47 @@ struct fat_dir *ls(FILE *fp, struct fat_bpb *bpb)
         }
     }
 
+    free(dirs); // Libera a memória alocada
     return dirs;
-} 
+}
 
-
-//REFATORAÇÃO MV
-// Conversão de nome para FAT32: A função cstr_to_fat32wnull() é usada para converter 
-// os nomes de arquivo para o formato adequado no FAT32.
-// Leitura do diretório raiz: O diretório raiz é lido usando o endereço calculado pela 
-// função bpb_root_dir_address(bpb). Isso permite encontrar as entradas de diretório no formato fat_dir.
-// Busca de arquivos de origem e destino: A função find_in_root() é usada para localizar 
-// as entradas de diretório correspondentes aos arquivos de origem (source) e destino (dest).
-// Verificação de substituição de arquivo: Caso o arquivo de destino já exista, o comando 
-// mv falha (não permitido substituir arquivos). Isso é feito verificando se a entrada do destino já está presente.
-// Renomeação (movimento): Se o arquivo de origem é encontrado, seu nome é alterado para o 
-// nome do destino (dest_rname), e a entrada do diretório é atualizada.
-// Escrita de volta ao disco: A entrada de diretório modificada (com o novo nome) é escrita 
-// de volta no disco usando fseek() e fwrite().
-// Sem cópia de clusters: Diferente de cp, no mv não há a necessidade de copiar os clusters, 
-// pois estamos apenas alterando o nome do arquivo no diretório.
-void mv(FILE *fp, char *source, char *dest, struct fat_bpb *bpb)
-{
+void mv(FILE *fp, char *source, char *dest, struct fat_bpb *bpb) {
     char source_rname[FAT32STR_SIZE_WNULL], dest_rname[FAT32STR_SIZE_WNULL];
 
     // Converte os nomes dos arquivos para o formato FAT32.
-    bool badname = cstr_to_fat32wnull(source, source_rname)
-                || cstr_to_fat32wnull(dest, dest_rname);
-
-    if (badname)
-    {
+    bool badname = cstr_to_fat32wnull(source, source_rname) || cstr_to_fat32wnull(dest, dest_rname);
+    if (badname) {
         fprintf(stderr, "Nome de arquivo inválido.\n");
         exit(EXIT_FAILURE);
     }
 
-    // Calcula o endereço do diretório raiz no FAT32.
     uint32_t root_address = bpb_root_dir_address(bpb);
-
-    // Calcula o tamanho da estrutura que guarda as entradas de diretório da pasta raiz.
     uint32_t root_size = sizeof(struct fat_dir) * bpb->n_fat;
 
-    // Lê as entradas do diretório raiz
-    struct fat_dir root[root_size];
-    if (read_bytes(fp, root_address, &root, root_size) == RB_ERROR)
-        error_at_line(EXIT_FAILURE, EIO, __FILE__, __LINE__, "erro ao ler diretório raiz");
+    struct fat_dir *root = malloc(root_size);
+    if (root == NULL) {
+        error_at_line(EXIT_FAILURE, ENOMEM, __FILE__, __LINE__, "Erro ao alocar memória para o diretório raiz");
+    }
 
-    // Encontra a entrada do arquivo de origem e destino
+    if (read_bytes(fp, root_address, root, root_size) == RB_ERROR) {
+        free(root);
+        error_at_line(EXIT_FAILURE, EIO, __FILE__, __LINE__, "Erro ao ler estrutura do diretório raiz");
+    }
+
     struct far_dir_searchres dir1 = find_in_root(root, source_rname, bpb);
     struct far_dir_searchres dir2 = find_in_root(root, dest_rname, bpb);
 
     // Verifica se o destino já existe (não pode substituir)
-    if (dir2.found == true)
+    if (dir2.found) {
+        free(root);
         error(EXIT_FAILURE, 0, "Não permitido substituir arquivo %s via mv.", dest);
+    }
 
     // Verifica se a origem existe
-    if (dir1.found == false)
+    if (!dir1.found) {
+        free(root);
         error(EXIT_FAILURE, 0, "Não foi possível encontrar o arquivo %s.", source);
+    }
 
     // Mover o arquivo (renomeando no diretório)
     memcpy(dir1.fdir.name, dest_rname, sizeof(char) * FAT32STR_SIZE);
@@ -151,23 +117,15 @@ void mv(FILE *fp, char *source, char *dest, struct fat_bpb *bpb)
     (void) fwrite(&dir1.fdir, sizeof(struct fat_dir), 1, fp);
 
     printf("mv %s → %s.\n", source, dest);
+    free(root);
     return;
 }
 
-
-// Busca da entrada do diretório: Encontre o arquivo a ser removido.
-// Liberação da entrada de diretório: A marcação da entrada como "livre" (usando o valor DIR_FREE_ENTRY).
-// Liberação dos clusters: Libere os clusters que estavam alocados para o arquivo, zerando as entradas correspondentes na tabela FAT.
-// Exclusão do arquivo: A entrada do diretório e a tabela FAT devem ser modificadas para indicar que o arquivo foi removido.
-
-void rm(FILE* fp, char* filename, struct fat_bpb* bpb)
-{
-    /* Manipulação de diretório */
+void rm(FILE* fp, char* filename, struct fat_bpb* bpb) {
     char fat32_rname[FAT32STR_SIZE_WNULL];
 
     // Converte o nome do arquivo para o formato FAT32
-    if (cstr_to_fat32wnull(filename, fat32_rname))
-    {
+    if (cstr_to_fat32wnull(filename, fat32_rname)) {
         fprintf(stderr, "Nome de arquivo inválido.\n");
         exit(EXIT_FAILURE);
     }
@@ -175,15 +133,22 @@ void rm(FILE* fp, char* filename, struct fat_bpb* bpb)
     uint32_t root_address = bpb_root_dir_address(bpb);
     uint32_t root_size = sizeof(struct fat_dir) * bpb->n_fat;
 
-    struct fat_dir root[root_size];
+    struct fat_dir *root = malloc(root_size);
+    if (root == NULL) {
+        error_at_line(EXIT_FAILURE, ENOMEM, __FILE__, __LINE__, "Erro ao alocar memória para o diretório raiz");
+    }
 
-    if (read_bytes(fp, root_address, &root, root_size) == RB_ERROR)
+    if (read_bytes(fp, root_address, root, root_size) == RB_ERROR) {
+        free(root);
         error_at_line(EXIT_FAILURE, EIO, __FILE__, __LINE__, "Erro ao ler estrutura do diretório raiz");
+    }
 
     // Encontra a entrada do arquivo a ser removido
     struct far_dir_searchres dir = find_in_root(root, fat32_rname, bpb);
-    if (!dir.found)
+    if (!dir.found) {
+        free(root);
         error(EXIT_FAILURE, 0, "Não foi possível encontrar o arquivo %s.", filename);
+    }
 
     // Marca a entrada como livre (define o primeiro byte como DIR_FREE_ENTRY)
     dir.fdir.name[0] = DIR_FREE_ENTRY;
@@ -202,8 +167,7 @@ void rm(FILE* fp, char* filename, struct fat_bpb* bpb)
     size_t count = 0;
 
     // Continua liberando os clusters até encontrar EOF
-    while (cluster_number >= 0x00000002 && cluster_number <= 0x0FFFFFF7) 
-    {
+    while (cluster_number >= 0x00000002 && cluster_number <= 0x0FFFFFF7) {
         uint32_t infat_cluster_address = fat_address + cluster_number * 4;  // Cada entrada FAT32 tem 4 bytes
         uint32_t next_cluster;
 
@@ -219,11 +183,21 @@ void rm(FILE* fp, char* filename, struct fat_bpb* bpb)
     }
 
     printf("rm %s, %li clusters apagados.\n", filename, count);
-
+    free(root);
     return;
 }
+uint32_t next_cluster(FILE *fp, struct fat_bpb *bpb, uint32_t cluster) {
+    uint32_t fat_offset = cluster * 4; // Cada entrada na FAT32 tem 4 bytes
+    uint32_t fat_address = bpb_fat_address(bpb) + fat_offset;
+    uint32_t next_cluster;
 
+    if (read_bytes(fp, fat_address, &next_cluster, sizeof(next_cluster)) != RB_OK) {
+        perror("Erro ao ler próximo cluster na FAT");
+        return FAT32_EOF_HI; // Retorna EOF se houver erro
+    }
 
+    return next_cluster & 0x0FFFFFFF; // Aplica máscara de 28 bits
+}
 struct fat32_newcluster_info fat32_find_free_cluster(FILE* fp, struct fat_bpb* bpb)
 {
     uint32_t cluster = 2;  // Iniciar a busca a partir do cluster 2

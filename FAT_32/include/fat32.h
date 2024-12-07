@@ -77,6 +77,7 @@ void rfat(FILE *, struct fat_bpb *);
 /* Prototypes for calculating FAT32 offsets and addresses */
 uint32_t bpb_fat_address(struct fat_bpb *);
 uint32_t bpb_root_dir_address(struct fat_bpb *);
+uint32_t next_cluster(FILE *fp, struct fat_bpb *bpb, uint32_t cluster);
 uint32_t bpb_data_address(struct fat_bpb *);
 uint32_t bpb_data_sector_count(struct fat_bpb *);
 uint32_t bpb_data_cluster_count(struct fat_bpb *bpb);
